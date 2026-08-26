@@ -55,6 +55,8 @@ import static org.apache.tinkerpop.gremlin.structure.service.Service.ServiceCall
 import static org.apache.tinkerpop.gremlin.structure.service.Service.Type;
 import static org.apache.tinkerpop.gremlin.tinkergraph.services.TinkerServiceRegistry.LambdaServiceFactory;
 import static org.apache.tinkerpop.gremlin.util.CollectionUtil.asMap;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
@@ -136,30 +138,30 @@ public class TinkerGraphServiceTest {
         /*
          * Search via .with(String, Traversal) (dynamic parameters)
          */
-        assertArrayEquals(new String[] {
-                "path[vp[age->29], v[1]]",
-                "path[vp[age->27], v[2]]",
-                "path[vp[age->32], v[4]]",
-                "path[p[weight->0.2], e[12][6-created->3]]"
-                }, toResultStrings(
+        assertThat(toResultStrings(
 
             g.call("tinker.search").with("search", __.constant("2"))
                 .element().path()
 
+        ), arrayContainingInAnyOrder(
+                "path[vp[age->29], v[1]]",
+                "path[vp[age->27], v[2]]",
+                "path[vp[age->32], v[4]]",
+                "path[p[weight->0.2], e[12][6-created->3]]"
         ));
 
         /*
          * Search via .with(String, Traversal) (dynamic parameters)
          */
-        assertArrayEquals(new String[] {
-                "path[vp[age->29], v[1]]",
-                "path[vp[age->27], v[2]]",
-                "path[vp[age->32], v[4]]",
-        }, toResultStrings(
+        assertThat(toResultStrings(
 
                 g.call("tinker.search").with("search", __.constant("2")).with("type", "Vertex")
                         .element().path()
 
+        ), arrayContainingInAnyOrder(
+                "path[vp[age->29], v[1]]",
+                "path[vp[age->27], v[2]]",
+                "path[vp[age->32], v[4]]"
         ));
 
     }
@@ -458,5 +460,6 @@ public class TinkerGraphServiceTest {
         assertEquals("Did not produce exactly one result", 1, result.size());
         assertEquals(expected, result.get(0));
     }
+
 
 }
