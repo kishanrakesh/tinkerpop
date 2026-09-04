@@ -168,32 +168,32 @@ public class TinkerGraphServiceTest {
 
     @Test
     public void g_V_call_degree_centrality() {
-        assertArrayEquals(new String[] {
+        assertThat(toResultStrings(
+
+                g.V().as("v").call("tinker.degree.centrality")
+                        .project("vertex", "degree").by(select("v")).by()
+
+        ), arrayContainingInAnyOrder(
                 "{vertex=v[1], degree=0}",
                 "{vertex=v[2], degree=1}",
                 "{vertex=v[3], degree=3}",
                 "{vertex=v[4], degree=1}",
                 "{vertex=v[5], degree=1}",
-                "{vertex=v[6], degree=0}",
-        }, toResultStrings(
-
-                g.V().as("v").call("tinker.degree.centrality")
-                        .project("vertex", "degree").by(select("v")).by()
-
+                "{vertex=v[6], degree=0}"
         ));
 
-        assertArrayEquals(new String[] {
+        assertThat(toResultStrings(
+
+                g.V().as("v").call("tinker.degree.centrality").with("direction", Direction.OUT)
+                        .project("vertex", "degree").by(select("v").values("name")).by()
+
+        ), arrayContainingInAnyOrder(
                 "{vertex=marko, degree=3}",
                 "{vertex=vadas, degree=0}",
                 "{vertex=lop, degree=0}",
                 "{vertex=josh, degree=2}",
                 "{vertex=ripple, degree=0}",
-                "{vertex=peter, degree=1}",
-        }, toResultStrings(
-
-                g.V().as("v").call("tinker.degree.centrality").with("direction", Direction.OUT)
-                        .project("vertex", "degree").by(select("v").values("name")).by()
-
+                "{vertex=peter, degree=1}"
         ));
 
         checkResult("lop", g.V().where(__.call("tinker.degree.centrality").is(3)).values("name"));
@@ -404,13 +404,13 @@ public class TinkerGraphServiceTest {
         checkResult(5l, g.V().repeat(out()).until(outE().count().is(0)).call(serviceName).with("shortest").count());
         checkResult(7l, g.V().repeat(out()).until(outE().count().is(0)).call(serviceName).with("shortest").with("longest").count());
 
-        assertArrayEquals(new String[] {
-                "path[v[1], v[4], v[5]]",
-                "path[v[1], v[4], v[3]]"
-                }, toResultStrings(
+        assertThat(toResultStrings(
 
                 g.V().repeat(out()).until(outE().count().is(0)).call(serviceName).path()
 
+        ), arrayContainingInAnyOrder(
+                "path[v[1], v[4], v[5]]",
+                "path[v[1], v[4], v[3]]"
         ));
     }
 
@@ -460,6 +460,5 @@ public class TinkerGraphServiceTest {
         assertEquals("Did not produce exactly one result", 1, result.size());
         assertEquals(expected, result.get(0));
     }
-
 
 }
